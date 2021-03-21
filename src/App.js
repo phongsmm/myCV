@@ -8,28 +8,27 @@ var QRCode = require('qrcode.react');
 
 export default function App() {
 
-  const [repo,setRepo]=useState([])
+  let [repo,setRepo]=useState([])
   const [currentpage,setcurrentpage] = useState(1)
   const [perpage,setperpage] = useState(3)
-  const [slicerepo,setslicerepo] = useState([])
-  const [firstvalue,setfirstvalue] = useState()
+  let [firstvalue,setfirstvalue] = useState({name:"",url:""})
   
 
   useEffect(()=>{
-    async function api(){
-      let res = await axios.get("https://api.github.com/users/phongsmm/repos")
-      setRepo(res.data)
+  
+      axios.get("https://api.github.com/users/phongsmm/repos")
+      .then((res)=> {setRepo(res.data) 
+                    setfirstvalue({name:res.data[0].name,url:res.data[0].html_url})} )
+      
+      
     
       
-
-
-
-
-      
-    }
-    api()
     
   },[])
+
+
+  console.log(`#${firstvalue.name}`)
+
 
 
   const indexOfLast = currentpage * perpage;
@@ -44,6 +43,8 @@ export default function App() {
       </Pagination.Item>,
     );
   }
+
+
 
   
 
@@ -76,18 +77,14 @@ export default function App() {
     <Col>    <Card>
   <Card.Body>
     <Card.Title>Info</Card.Title>
-    <Card.Text>
-    <h5>Education </h5>
+    <h4>Education </h4>
     <p style={{opacity:0.8}}>Thai-Nichi Institute of Technology
 Faculty :  Information Technology (B.Sc.)</p>
 <p style={{opacity:0.8}}>[ Bachelor ]  GPAX 3.45</p>
 <p style={{opacity:0.8}}>      TOEIC : 625</p>
-<h5>Internship </h5>
+<h4>Internship </h4>
 <p style={{opacity:0.8}}>IBMSD TH (Application Service Management Side)</p>
  
-
-
-    </Card.Text>
     <Row >
   
       <Button variant="primary" href="mailto: me.phongpisut_st@tni.ac.th" style={{margin:5}}>Email <IoMdMail/> </Button>
@@ -101,10 +98,11 @@ Faculty :  Information Technology (B.Sc.)</p>
 </Card>
 </Col>
 
-    <Col><Card style={{ marginTop:10 }}>
+
+    {firstvalue.name!=""?    <Col><Card style={{ marginTop:10 }}>
   <Card.Body>
     <Card.Title>Github Repository</Card.Title>
-    <Tab.Container id="list-group-tabs-example" defaultActiveKey={'#fastapi-mongodb-example'}>
+    <Tab.Container id="list-group-tabs-example" defaultActiveKey={`#${firstvalue.name}`}>
   <Row>
     <Col sm={4}>
       <ListGroup>
@@ -125,7 +123,7 @@ Faculty :  Information Technology (B.Sc.)</p>
               <Row>
            
               <Col xs={6}>
-                <Row>{i.name}</Row>
+                <Row><a href={i.html_url}>{i.name}</a></Row>
                 <Row> <Badge variant="info">{i.language}</Badge> </Row>
                 <Row style={{opacity:0.6,fontSize:12}}> Created at : {i.created_at}  </Row>
                 
@@ -146,7 +144,7 @@ Faculty :  Information Technology (B.Sc.)</p>
     
 
   </Card.Body>
-</Card></Col>
+</Card></Col>:null}
   </Row>
 </Container>
   </div>
